@@ -1,0 +1,10 @@
+('C:\\Users\\ChenHanLin\\Desktop\\pyinstaller-2.0\\nofee_proxy\\dist\\nofee_proxy.exe',
+ True,
+ False,
+ None,
+ None,
+ [],
+ None,
+ True,
+ 0,
+ 1504273906L)
