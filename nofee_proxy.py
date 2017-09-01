@@ -19,8 +19,8 @@ def server_loop(local_host, local_port, remote_host, remote_port):
         print "Daemon is launched, do not close this windows"
         server.bind((local_host, local_port))
     except:
-        print "[!!] Failed to listen on %s:%d" % (local_host, local_port)
-        print "[!!] Check for other listening sockets or correct permissions"
+        print "[ERROR] Failed to listen on %s:%d" % (local_host, local_port)
+        print "[ERROR] Check for other listening sockets or correct permissions"
         sys.exit(0)
 
     # listen with 5 backlogged--queued--connections
@@ -30,7 +30,7 @@ def server_loop(local_host, local_port, remote_host, remote_port):
         client_socket, addr = server.accept()
 
         # print out the local connection information
-        print"[+] Received incomming connections from %s:%d" % (addr[0], addr[1])
+        print"[INFO] Received incomming connections from %s:%d" % (addr[0], addr[1])
 
         # start a new thread to talk to the remote host
         proxy_thread = threading.Thread(target=proxy_handler,
@@ -69,14 +69,14 @@ def request_handler(socket_buffer):
     #If it is an Auth packet
     if ('submitLogin' in socket_buffer) or ('eth_login' in socket_buffer):
         json_data = json.loads(socket_buffer, object_pairs_hook=OrderedDict)
-        print('[+] Auth in progress with address: ' + json_data['params'][0])
+        print('[INFO] Auth in progress with address: ' + json_data['params'][0])
         #If the auth contain an other address than our
         if wallet not in json_data['params'][0]:
-             print('[*] DevFee Detected - Replacing Address - ' + str(datetime.datetime.now()))
-             print('[*] OLD: ' + json_data['params'][0])
+             print('[FEE] DevFee Detected - Replacing Address - ' + str(datetime.datetime.now()))
+             print('[FEE] OLD: ' + json_data['params'][0])
              #We replace the address
              json_data['params'][0] = wallet + worker_name
-             print('[*] NEW: ' + json_data['params'][0])
+             print('[FEE] NEW: ' + json_data['params'][0])
 
         socket_buffer = json.dumps(json_data) + '\n'
         
@@ -99,13 +99,13 @@ def proxy_handler(client_socket, remote_host, remote_port):
         try:
             remote_socket.connect((remote_host, remote_port))
         except:
-            print "[!] Impossible to connect to the pool. Try again in few seconds "
+            print "[WARN] Impossible to connect to the pool. Try again in few seconds "
             time.sleep(2)
         else:
             # Connection OK
             break
     else:
-        print "[!] Impossible initiate connection to the pool. Claymore should reconnect. (Check your internet connection) "+ str(datetime.datetime.now())
+        print "[WARN] Impossible initiate connection to the pool. Claymore should reconnect. (Check your internet connection) "+ str(datetime.datetime.now())
         
         #Closing connection
         client_socket.shutdown(socket.SHUT_RDWR)
@@ -133,9 +133,9 @@ def proxy_handler(client_socket, remote_host, remote_port):
             try:
                 remote_socket.send(local_buffer)
             except:
-                print "[!] Sending packets to pool failed."
+                print "[WARN] Sending packets to pool failed."
                 time.sleep(0.02)
-                print "[!] Connection with pool lost. Claymore should reconnect. (May be temporary) "+ str(datetime.datetime.now())
+                print "[WARN] Connection with pool lost. Claymore should reconnect. (May be temporary) "+ str(datetime.datetime.now())
                 #Closing connection
                 client_socket.shutdown(socket.SHUT_RDWR)
                 client_socket.close()
@@ -159,7 +159,7 @@ def proxy_handler(client_socket, remote_host, remote_port):
             try:
                  client_socket.send(remote_buffer)
             except:
-                 print('[-] Auth Disconnected - Ending Devfee or stopping mining - ' + str(datetime.datetime.now()))
+                 print('[INFO] Auth Disconnected - Ending Devfee or stopping mining - ' + str(datetime.datetime.now()))
                  client_socket.close()
                  break
 
