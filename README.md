@@ -1,6 +1,7 @@
-# Claymore-NoFee
+# Claymore-NoFee  +GUI
 完美屏蔽Claymore 9.X的手续费。Removes Claymore's 9.x 1-2% mining fee using Stratum Proxy。开发测试环境Ubuntu 16.04 、 Windows 10 和 Claymore 9.7原版
 
+++增加了易于小白使用的GUI
 
 ## 工作机制
 此协议用于 Claymore 和公网连接之间抓取mining fee数据包替换devfee地址为自己钱包地址. 重定向速度很快不需要重启挖矿终端 。
